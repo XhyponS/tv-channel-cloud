@@ -1,0 +1,10 @@
+FROM bluenviron/mediamtx:latest
+
+# Install FFmpeg and curl inside the cloud server
+RUN apk add --no-cache ffmpeg curl
+
+# Copy your playlist instructions into the cloud server
+COPY playlist.txt /app/playlist.txt
+
+# Stream the sequence, dynamically burning subtitles only when specified in the playlist
+ENV MTX_PATHS_ALL_SOURCE="runOnDemand: ffmpeg -re -f concat -safe 0 -stream_loop -1 -i /app/playlist.txt -vf 'subtitles=/app/playlist.txt' -c:v libx264 -preset ultrafast -c:a copy -f rtsp rtsp://localhost:8554/all"
